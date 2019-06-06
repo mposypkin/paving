@@ -22,6 +22,7 @@ def solve(x):
         z = p @ F(x)
         print("------------")
         print(z)
+        print(np.inner(z, z))
         con = input("continue (n/y)?")
         if con == "n":
             break
