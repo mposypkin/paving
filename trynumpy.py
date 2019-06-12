@@ -1,7 +1,7 @@
 import numpy as np
 
 def F(x):
-    return np.array([np.inner(x,x), x[2] - 1])
+    return np.array([np.inner(x,x) - 2, x[2] - 1])
 
 def hess(x):
     return np.array([[2 * x[0], 2 * x[1], 2 * x[2]], [0, 0, 1]])
@@ -15,13 +15,15 @@ def penrose(a):
 
 def solve(x):
     while True:
+        print(x)
+        print(F(x))
         a = 1
         h = hess(x)
         p = penrose(h)
         print(h @ p)
         z = p @ F(x)
         print("------------")
-        print(z)
+
         print(np.inner(z, z))
         con = input("continue (n/y)?")
         if con == "n":
