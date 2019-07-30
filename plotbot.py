@@ -13,7 +13,8 @@ def plot(parr, color = 'red', show = True):
         b1 = p[0][1]
         a2 = p[1][0]
         b2 = p[1][1]
-        rectangle = plt.Rectangle((a1, a2), b1 - a1, b2 - a2, fc=color, fill = True, color='black')
+        # rectangle = plt.Rectangle((a1, a2), b1 - a1, b2 - a2, fc=color, fill = True, color='black')
+        rectangle = plt.Rectangle((a1, a2), b1 - a1, b2 - a2, fc=color, fill = True)
         plt.gca().add_patch(rectangle)
     plt.axis('scaled')
     if show:

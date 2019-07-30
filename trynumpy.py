@@ -64,8 +64,16 @@ def solve(x):
 # print(penrose(a))
 
 # solve(np.array([0.5,0.5,0.9]))
-xv = np.array([0.5,0.5,0.9,0.9, 0.9,0.9])
-solve(xv)
+# xv = np.array([0.5,0.5,0.9,0.9, 0.9,0.9])
+# solve(xv)
+#
+# print("x = ", xv)
+# print("F(x) = ", F(xv))
 
-print("x = ", xv)
-print("F(x) = ", F(xv))
+s1 = "aaa"
+s2 = s1
+print(s1, s2)
+s1.swapcase()
+print(s1, s2)
+
+
