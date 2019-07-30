@@ -1,4 +1,5 @@
 import numpy as np
+from sympy import *
 
 # def F(x):
 #     return np.array([np.inner(x,x), x[2] - 1])
@@ -76,4 +77,7 @@ print(s1, s2)
 s1.swapcase()
 print(s1, s2)
 
+x = Symbol('x')
+ex = diff(sin(x), x)
+print(ex)
 

@@ -36,16 +36,26 @@ class Interval:
         return ninterval
 
     def __add__(self, other):
+        ointerval = valueToInterval(other)
         ninterval = Interval(self.x)
-        ninterval.x[0] = self.x[0] + other.x[0]
-        ninterval.x[1] = self.x[1] + other.x[1]
+        ninterval.x[0] = self.x[0] + ointerval.x[0]
+        ninterval.x[1] = self.x[1] + ointerval.x[1]
         return ninterval
 
+    def __radd__(self, other):
+        return self.__add__(other)
+
     def __sub__(self, other):
+        ointerval = valueToInterval(other)
         ninterval = Interval(self.x)
-        ninterval.x[0] = self.x[0] - other.x[1]
-        ninterval.x[1] = self.x[1] - other.x[0]
+        ninterval.x[0] = self.x[0] - ointerval.x[1]
+        ninterval.x[1] = self.x[1] - ointerval.x[0]
         return ninterval
+
+    def __rsub__(self, other):
+        ointerval = valueToInterval(other)
+        return ointerval.__sub__(self)
+
 
     def __pow__(self, other):
         ninterval = Interval(self.x)
@@ -66,10 +76,22 @@ class Interval:
         return ninterval
 
     def __mul__(self, other):
-        v = [self.x[0] * other.x[0], self.x[0] * other.x[1], self.x[1] * other.x[0], self.x[1] * other.x[1]]
+        ointerval = valueToInterval(other)
+        v = [self.x[0] * ointerval.x[0], self.x[0] * ointerval.x[1], self.x[1] * ointerval.x[0], self.x[1] * ointerval.x[1]]
         b = [min(v), max(v)]
         return Interval(b)
 
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+def valueToInterval(expr):
+    if isinstance(expr, int):
+        etmp = Interval([expr, expr])
+    elif isinstance(expr, float):
+        etmp = Interval([expr, expr])
+    else:
+        etmp = expr
+    return etmp
 
 def sin(x):
     y = [math.sin(x[0]), math.sin(x[1])]
@@ -119,6 +141,12 @@ if (__name__ == '__main__'):
     y = Interval([5,6])
     print(x + y)
     print(x * y)
+    print(y + 5)
+    print(5 + y)
+    print(y - 1)
+    print(1 - y)
+    print(y * 2.)
+    print(2. * y)
     print(x.mid(), " ", y.mid())
     z = Interval([-2,1])
     x.intersec(z)
