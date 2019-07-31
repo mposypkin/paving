@@ -20,13 +20,6 @@ def dg(x, a):
     return 1. - 2. * a * x[2]
 
 
-def inflate(x):
-    m = 0.5 * (x[0] + x[1])
-    w = x[1] - x[0]
-    x[0] = m - 0.51 * w
-    x[1] = m + 0.51 * w
-
-
 # def checkBoxNT(par):
 #     c = ival.Interval(par[2]).mid()
 #     boxc = [ival.Interval(par[0]), ival.Interval(par[1]), ival.Interval([c,c])]
@@ -50,21 +43,18 @@ def inflate(x):
 
 def checkBoxKR(par):
     c = par[2].mid()
-    ac = 1./(2. * c)
+    ac = 1./(2. * c) if c != 0 else 0.1
     ic = [par[0], par[1], c]
     igc = g(ic, ac)
     idg = dg(par, ac)
     ix = igc + idg * (par[2] - c)
-    ix2 = par[2]
-    # print("ix = ", ix, "ix2 = ", ix2)
-    if ix.isIn(ix2):
+    if ix.isIn(par[2]):
         rv = IN
-    elif ix.isNoIntersec(ix2):
+    elif ix.isNoIntersec(par[2]):
         rv = OUT
     else:
-        ix.intersec(ival.Interval([0, 100]))
         par[2] = ix
-        inflate(par[2])
+        # par[2].scale(1.1)
         rv = INDET
     return rv
 
@@ -94,10 +84,8 @@ def boxSize(par, coords):
 
 def reduceBox(par):
     delta = 1e-8
-    snew = 10
     sold = boxSize(par, [2])
     i = 0
-    # print("Reduce entry")
     while(True):
         cb = checkBox(par)
         if not cb == INDET:
@@ -114,20 +102,14 @@ def reduceBox(par):
 def evalBox(par):
     delta = 1e-1
     snew = boxSize(par, [2])
-    print("snew = ", snew)
-    # cb = checkBox(par)
-
     cb = reduceBox(par.copy())
-    # return cb
     if not cb == INDET:
         return cb
     else:
         if snew < delta:
-            # print(par, snew)
             return reduceBox(par)
-            # return cb
         else:
-            m = par[2].mid();
+            m = par[2].mid()
             vl = evalBox([par[0], par[1], ival.Interval([par[2][0], m])])
             if vl == IN:
                 return IN
@@ -143,25 +125,10 @@ def evalBox(par):
                 else:
                     return INDET
 
-# def reduceBox(par):
-#     delta = 1e-3
-#     snew = 0
-#     sold = boxSize(par, [2])
-#     while(True):
-#         print(par, sold)
-#         cb = checkBox(par)
-#         if cb != INDET:
-#             return cb
-#         else:
-#             snew = boxSize(par, [2])
-#             if sold - snew < delta:
-#                 return cb
-#             else:
-#                 sold = snew
 
 # box = [[0.1, 0.3], [0.1, 0.3], [0.01, 1]]
 # box = [[0.0, 0.5], [0.0, 0.5], [0.6422613636363637, 1.1]]
-box = [[0.8, 0.9], [0.0, 0.1], [0.4,0.6]]
+# box = [[0.8, 0.9], [0.0, 0.1], [0.4,0.6]]
 # box = [[-0.5, 0.0], [-0.5, 0.0], [0.6422613636363637, 1.1]]
 # print(reduceBox(intervalize(box)))
 # print(evalBox(intervalize(box)))
@@ -171,15 +138,16 @@ box = [[0.8, 0.9], [0.0, 0.1], [0.4,0.6]]
 inbox = []
 outbox = []
 indetbox = []
-n = 10
+n = 120
 h = 2. / n
 A = -1
 B = -1
+zl = 0.0
+zu = 1.0
 for i in range(0,n):
     for j in range(0,n):
-        bx = [[A + h * i, A + h * (i + 1)], [B + h * j, B + h * (j + 1)], [0.0, 1]]
+        bx = [[A + h * i, A + h * (i + 1)], [B + h * j, B + h * (j + 1)], [zl, zu]]
         cb = evalBox(intervalize(bx))
-        # print(cb)
         if cb == IN:
             inbox.append(bx)
         elif cb == OUT:

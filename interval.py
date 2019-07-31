@@ -11,6 +11,12 @@ class Interval:
     def mid(self):
         return 0.5 * (self.x[0] + self.x[1])
 
+    def scale(self, factor):
+        m = 0.5 * (self.x[0] + self.x[1])
+        r = 0.5 * (self.x[1] - self.x[0])
+        self.x[0] = m - factor * r
+        self.x[1] = m + factor * r
+
     def isIn(self, other):
         return (self.x[0] >= other.x[0]) and (self.x[1] <= other.x[1])
 
