@@ -10,13 +10,13 @@ def intervalize(par):
     return [ival.Interval(e) for e in par]
 
 # Disc
-# def f(x):
-#     return x[0] ** 2 + x[1] ** 2 + x[2] ** 2 - 1
-#
-# def df(x):
-#     return 2 * x[2]
-#
-# bigBox = [[-2, 2], [-2, 2], [0,1]]
+def f(x):
+    return x[0] ** 2 + x[1] ** 2 + x[2] ** 2 - 1
+
+def df(x):
+    return 2 * x[2]
+
+bigBox = [[-2, 2], [-2, 2], [0,1]]
 
 
 # Ring
@@ -30,13 +30,13 @@ def intervalize(par):
 
 
 # Butterfly
-def f(x):
-    return x[0] ** 2 - x[1] ** 2 + x[2] ** 2 - 1
-
-def df(x):
-    return 2 * x[2]
-
-bigBox = [[-2, 2], [-2, 2], [0,10]]
+# def f(x):
+#     return x[0] ** 2 - x[1] ** 2 + x[2] ** 2 - 1
+#
+# def df(x):
+#     return 2 * x[2]
+#
+# bigBox = [[-2, 2], [-2, 2], [0,10]]
 
 
 
@@ -103,8 +103,8 @@ def getKRSBounds(par):
 
 
 def checkBoxKR(par):
-    # ix = getKRBounds(par)
-    ix = getKRSBounds(par)
+    ix = getKRBounds(par)
+    # ix = getKRSBounds(par)
     if ix.isIn(par[2]):
         rv = IN
     elif ix.isNoIntersec(par[2]):
@@ -126,7 +126,20 @@ def checkBoxKR(par):
 # def checkBox(par):
 #     return checkBoxNT(par)
 
+def bndFixPointTest(par):
+    # return False
+    c = df(par).mid()
+    a = 1 / c if c != 0 else 0.1
+    i1 = g([par[0], par[1], ival.Interval([par[2][0], par[2][0]])], a)
+    if i1.isIn(par[2]):
+        i2 = g([par[0], par[1], ival.Interval([par[2][1], par[2][1]])], a)
+        if i2.isIn(par[2]):
+            return True
+    return False
+
 def checkBox(par):
+    if bndFixPointTest(par):
+        return IN
     return checkBoxKR(par)
 
 def boxSize(par, coords):
@@ -159,21 +172,11 @@ def reduceBox(par):
                 sold = snew
                 par[2].scale(1.1)
 
-def bndFixPointTest(par):
-    # return False
-    c = df(par).mid()
-    a = 1 / c if c != 0 else 0.1
-    i1 = g([par[0], par[1], ival.Interval([par[2][0], par[2][0]])], a)
-    if i1.isIn(par[2]):
-        i2 = g([par[0], par[1], ival.Interval([par[2][1], par[2][1]])], a)
-        if i2.isIn(par[2]):
-            return True
-    return False
 
 def evalBox(par):
     delta = 1e-1
-    if bndFixPointTest(par):
-        return IN
+    # if bndFixPointTest(par):
+    #     return IN
     snew = boxSize(par, [2])
     cb = reduceBox(par.copy())
     if not cb == INDET:
@@ -198,29 +201,37 @@ def evalBox(par):
                 else:
                     return INDET
 
+def polish(v, n):
+    return [round(x, n) for x in v]
+
 maxBoxSize = 16
 
 # box = [[-0.8, -0.6], [0.8, 1], [0, 1]]
-# box = [[-0.8, -0.6], [-1, -0.8], [0, 1]]
-box = [[-0.7999999999999998, -0.5999999999999999], [-1, -0.7999999999999998], [0, 10]]
+box = [[-0.8, -0.6], [-1, -0.8], [0, 1]]
+# box = [[-0.7999999999999998, -0.5999999999999999], [-1, -0.7999999999999998], [0, 10]]
+print([polish(x, 1) for x in box])
 # box = [[0.0, 0.5], [0.0, 0.5], [0.6422613636363637, 1.1]]
 # box = [[0.8, 0.9], [0.0, 0.1], [0.4,0.6]]
 # box = [[-0.5, 0.0], [-0.5, 0.0], [0.6422613636363637, 1.1]]
 # print(reduceBox(intervalize(box)))
 print("eval: ", evalBox(intervalize(box)))
+boxr = [polish(x, 1) for x in box]
+print("eval: ", evalBox(intervalize(boxr)))
 # print(checkBox(intervalize(box)))
 # exit(0)
 
 inbox = []
 outbox = []
 indetbox = []
-n = 10
+n = 20
 h = [(I[1] - I[0]) / n for I in bigBox]
 
 for i in range(0,n):
     for j in range(0,n):
         bx = [[bigBox[0][0] + h[0] * i, bigBox[0][0] + h[0] * (i + 1)], [bigBox[1][0] + h[1] * j, bigBox[1][0] + h[1] * (j + 1)], bigBox[2]]
-        cb = evalBox(intervalize(bx))
+        bxr = [polish(x, 3) for x in bx]
+        print(bx, bxr)
+        cb = evalBox(intervalize(bxr))
         if cb == IN:
             inbox.append(bx)
         elif cb == OUT:
